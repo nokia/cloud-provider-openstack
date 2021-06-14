@@ -482,7 +482,7 @@ func nodeAddresses(srv *servers.Server, interfaces []attachinterfaces.Interface,
 		return nil, err
 	}
 
-	// takes care of sub-ports
+	// add subports if exist to the server
 	extraPrivates := make(map[string][]Address)
 	for k, v := range allPrivates {
 		ok := false
@@ -653,7 +653,7 @@ func getAttachedInterfacesByID(compute *gophercloud.ServiceClient, serviceID str
 		}
 		n, err := networks.Get(network, p.NetworkID).Extract()
 		if err != nil {
-			return nil, err
+			return interfaces, err
 		}
 		var iface = attachinterfaces.Interface{
 			PortState: "ACTIVE",
