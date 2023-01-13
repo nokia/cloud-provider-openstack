@@ -502,7 +502,12 @@ func nodeAddresses(srv *servers.Server, interfaces []attachinterfaces.Interface,
 	}
 	klog.V(5).Infof("Node '%s' extraPrivates '%s'", srv.Name, extraPrivates)
 	for k, v := range extraPrivates {
-		addresses[k] = v
+		v1, ok := addresses[k]
+		if !ok {
+			addresses[k] = v
+		} else {
+			addresses[k] = append(v1, v...)
+		}
 	}
 
 	var networks []string
