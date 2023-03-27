@@ -2,10 +2,10 @@ apiVersion: v1
 entries:
   openstack-cinder-csi:
   - apiVersion: v1
-    appVersion: v1.21.0
-    created: "2022-06-01T18:38:58.114495247Z"
+    appVersion: v1.27.0-alpha.0
+    created: "2023-03-27T19:56:59.318933907Z"
     description: Cinder CSI Chart for OpenStack
-    digest: 89f8f222c0c3b24f262d89875cd32f11984aceb190c01be4a996743b8c5bdb93
+    digest: b3b934adaa69ba9ceb5e838de444a7795b46a730b4bf7ad5fb041f1d0cea6bf5
     home: https://github.com/kubernetes/cloud-provider-openstack
     icon: https://github.com/kubernetes/kubernetes/blob/master/logo/logo.png
     maintainers:
@@ -13,33 +13,30 @@ entries:
       name: brtknr
     name: openstack-cinder-csi
     urls:
-    - https://github.com/nokia/cloud-provider-openstack/releases/download/openstack-cinder-csi-1.3.9/openstack-cinder-csi-1.3.9.tgz
-    version: 1.3.9
+    - https://github.com/nokia/cloud-provider-openstack/releases/download/openstack-cinder-csi-2.27.0-alpha.0/openstack-cinder-csi-2.27.0-alpha.0.tgz
+    version: 2.27.0-alpha.0
   openstack-cloud-controller-manager:
   - apiVersion: v1
-    appVersion: v1.21.0
-    created: "2022-06-01T18:38:58.258440425Z"
+    appVersion: v1.27.0-alpha.0
+    created: "2023-03-27T19:56:59.484857517Z"
     description: Openstack Cloud Controller Manager Helm Chart
-    digest: e2830cf582ef522140eaca7529f2ed869c21a87999db4aeb07ffbf2d5dbd3ab6
+    digest: c5b646d9918d892e0dd2dbac47e6d60645ad06103d561e54dec2f4478422a56f
     home: https://github.com/kubernetes/cloud-provider-openstack
     icon: https://object-storage-ca-ymq-1.vexxhost.net/swift/v1/6e4619c416ff4bd19e1c087f27a43eea/www-images-prod/openstack-logo/OpenStack-Logo-Vertical.png
     maintainers:
-    - email: kubernetes@maurice-meyer.de
-      name: morremeyer
-      url: https://maurice-meyer.de
     - email: f.kloeker@telekom.de
       name: eumel8
       url: https://www.telekom.com
     name: openstack-cloud-controller-manager
     urls:
-    - https://github.com/nokia/cloud-provider-openstack/releases/download/openstack-cloud-controller-manager-1.0.2/openstack-cloud-controller-manager-1.0.2.tgz
-    version: 1.0.2
+    - https://github.com/nokia/cloud-provider-openstack/releases/download/openstack-cloud-controller-manager-2.27.0-alpha.0/openstack-cloud-controller-manager-2.27.0-alpha.0.tgz
+    version: 2.27.0-alpha.0
   openstack-manila-csi:
   - apiVersion: v1
-    appVersion: v1.21.0
-    created: "2022-06-01T18:38:58.379117524Z"
+    appVersion: v1.27.0-alpha.0
+    created: "2023-03-27T19:56:59.638744417Z"
     description: Manila CSI Chart for OpenStack
-    digest: d4cfc3003f400131de69fd3b37a53b60330bc3879f62ec59734066d376b18ca2
+    digest: 5411b0a5312f8dc5c8e5101d6706f575da393eb438f1995776e4a02a63188ef9
     home: http://github.com/kubernetes/cloud-provider-openstack
     icon: https://github.com/kubernetes/kubernetes/blob/master/logo/logo.png
     maintainers:
@@ -47,6 +44,6 @@ entries:
       name: brtknr
     name: openstack-manila-csi
     urls:
-    - https://github.com/nokia/cloud-provider-openstack/releases/download/openstack-manila-csi-1.1.2/openstack-manila-csi-1.1.2.tgz
-    version: 1.1.2
-generated: "2022-06-01T18:38:57.951044485Z"
+    - https://github.com/nokia/cloud-provider-openstack/releases/download/openstack-manila-csi-2.27.0-alpha.0/openstack-manila-csi-2.27.0-alpha.0.tgz
+    version: 2.27.0-alpha.0
+generated: "2023-03-27T19:56:59.163110289Z"
