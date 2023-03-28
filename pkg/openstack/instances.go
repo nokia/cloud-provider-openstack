@@ -726,9 +726,7 @@ func getAddressByName(compute *gophercloud.ServiceClient, name types.NodeName, n
 }
 
 // getSubInterfaces
-func getSubInterfaces(network *gophercloud.ServiceClient) ([]attachinterfaces.Interface, error) {
-	var interfaces []attachinterfaces.Interface
-
+func getSubInterfaces(interfaces []attachinterfaces.Interface, network *gophercloud.ServiceClient) ([]attachinterfaces.Interface, error) {
 	// Check if trunk ports are attached
 	listOpts := trunks.ListOpts{}
 	allPages, err := trunks.List(network, listOpts).AllPages()
@@ -807,7 +805,7 @@ func getAttachedInterfacesByID(compute *gophercloud.ServiceClient, serviceID str
 	if mc.ObserveRequest(err) != nil {
 		return interfaces, err
 	}
-	subInterfaces, err := getSubInterfaces(network)
+	subInterfaces, err := getSubInterfaces(interfaces, network)
 	if err != nil {
 		return interfaces, err
 	}
