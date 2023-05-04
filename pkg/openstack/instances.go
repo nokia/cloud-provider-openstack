@@ -725,66 +725,67 @@ func getAddressByName(compute *gophercloud.ServiceClient, name types.NodeName, n
 	return "", errors.ErrNoAddressFound
 }
 
-// getSubInterfaces
+// getSubInterfaces returns the sub-interfaces attached via trunks to the specified node interfaces
 func getSubInterfaces(interfaces []attachinterfaces.Interface, network *gophercloud.ServiceClient) ([]attachinterfaces.Interface, error) {
-	// Check if trunk ports are attached
-	listOpts := trunks.ListOpts{}
-	allPages, err := trunks.List(network, listOpts).AllPages()
-	if err != nil {
-		klog.Errorf("Failed to list trunks: %v", err)
-		return interfaces, err
-	}
-	allTrunks, err := trunks.ExtractTrunks(allPages)
-	if err != nil {
-		klog.Errorf("Failed to extract trunks: %v", err)
-		return interfaces, err
-	}
+	klog.V(5).Infof("Node has %d interfaces '%v'", len(interfaces), interfaces)
 
-	// Get subports attached to the trunk
-	var subports []trunks.Subport
-	for _, trunk := range allTrunks {
-		for _, iface := range interfaces {
-			if iface.PortID == trunk.PortID {
-				s, err := trunks.GetSubports(network, trunk.ID).Extract()
+	for _, iface := range interfaces {
+		// Check if trunk ports are attached
+		listOpts := trunks.ListOpts{
+			PortID: iface.PortID,
+		}
+		allPages, err := trunks.List(network, listOpts).AllPages()
+		if err != nil {
+			klog.Errorf("Failed to list trunks: %v", err)
+			return interfaces, err
+		}
+		allTrunks, err := trunks.ExtractTrunks(allPages)
+		if err != nil {
+			klog.Errorf("Failed to extract trunks: %v", err)
+			return interfaces, err
+		}
+		// Get subports attached to the trunks
+		for _, trunk := range allTrunks {
+			subports, err := trunks.GetSubports(network, trunk.ID).Extract()
+			if err != nil {
+				klog.Errorf("Failed to get subports for trunk %s: %v", trunk.ID, err)
+				return interfaces, err
+			}
+			if len(subports) == 0 {
+				continue
+			}
+			klog.V(5).Infof("Subports for trunk %s: %v", trunk.ID, subports)
+			// Arrange subports as for directly attached ports
+			for _, sport := range subports {
+				p, err := ports.Get(network, sport.PortID).Extract()
 				if err != nil {
-					klog.Errorf("Failed to get subports for trunk %s: %v", trunk.ID, err)
+					klog.Errorf("Failed to get port info for subport %s: %v", sport.PortID, err)
 					return interfaces, err
 				}
-				subports = append(subports, s...)
+				n, err := networks.Get(network, p.NetworkID).Extract()
+				if err != nil {
+					klog.Errorf("Failed to get network info for subport %s: %v", sport.PortID, err)
+					return interfaces, err
+				}
+				var iface = attachinterfaces.Interface{
+					PortState: "ACTIVE",
+					FixedIPs:  []attachinterfaces.FixedIP{},
+					PortID:    p.ID,
+					NetID:     n.Name,
+					MACAddr:   p.MACAddress,
+				}
+				for _, ip := range p.FixedIPs {
+					var ip2 = attachinterfaces.FixedIP{
+						SubnetID:  ip.SubnetID,
+						IPAddress: ip.IPAddress,
+					}
+					iface.FixedIPs = append(iface.FixedIPs, ip2)
+				}
+				interfaces = append(interfaces, iface)
 			}
 		}
 	}
-	klog.V(5).Infof("subports %v", subports)
-
-	// Arrange subports as for directly attached ports
-	for _, sport := range subports {
-		p, err := ports.Get(network, sport.PortID).Extract()
-		if err != nil {
-			klog.Errorf("Failed to get port info for subport %s: %v", sport.PortID, err)
-			return interfaces, err
-		}
-		n, err := networks.Get(network, p.NetworkID).Extract()
-		if err != nil {
-			klog.Errorf("Failed to get network info for subport %s: %v", sport.PortID, err)
-			return interfaces, err
-		}
-		var iface = attachinterfaces.Interface{
-			PortState: "ACTIVE",
-			FixedIPs:  []attachinterfaces.FixedIP{},
-			PortID:    p.ID,
-			NetID:     n.Name,
-			MACAddr:   p.MACAddress,
-		}
-		for _, ip := range p.FixedIPs {
-			var ip2 = attachinterfaces.FixedIP{
-				SubnetID:  ip.SubnetID,
-				IPAddress: ip.IPAddress,
-			}
-			iface.FixedIPs = append(iface.FixedIPs, ip2)
-		}
-		interfaces = append(interfaces, iface)
-	}
-	klog.V(5).Infof("interfaces %v", interfaces)
+	klog.V(5).Infof("Node has %d interfaces including subports '%v'", len(interfaces), interfaces)
 	return interfaces, nil
 }
 
