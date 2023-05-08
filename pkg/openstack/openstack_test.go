@@ -914,6 +914,249 @@ func TestNodeAddressesWithAddressSortOrderOptions(t *testing.T) {
 	}
 }
 
+func TestNodeAddressesWithSubports(t *testing.T) {
+	srv := servers.Server{
+		Status: "ACTIVE",
+		HostID: "06eacdcf714f7a2640b25a4a9a2f84a83c2a4e0d9913bb3581d8732a",
+		Addresses: map[string]interface{}{
+			"flat_net_phys5": []interface{}{
+				map[string]interface{}{
+					"OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:b3:9f:c2",
+					"version":                 float64(4),
+					"addr":                    "13.13.13.106",
+					"OS-EXT-IPS:type":         "fixed",
+				},
+				map[string]interface{}{
+					"OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:b3:9f:c2",
+					"version":                 float64(6),
+					"addr":                    "3000:0:0:1::3a3",
+					"OS-EXT-IPS:type":         "fixed",
+				},
+				map[string]interface{}{
+					"OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:1d:b7:a7",
+					"version":                 float64(4),
+					"addr":                    "13.13.13.186",
+					"OS-EXT-IPS:type":         "fixed",
+				},
+				map[string]interface{}{
+					"OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:1d:b7:a7",
+					"version":                 float64(6),
+					"addr":                    "3000:0:0:1::38a",
+					"OS-EXT-IPS:type":         "fixed",
+				},
+			},
+			"flat_net_phys6": []interface{}{
+				map[string]interface{}{
+					"OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:15:20:50",
+					"version":                 float64(4),
+					"addr":                    "14.14.14.228",
+					"OS-EXT-IPS:type":         "fixed",
+				},
+				map[string]interface{}{
+					"OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:15:20:50",
+					"version":                 float64(6),
+					"addr":                    "3000:0:0:1::1a3",
+					"OS-EXT-IPS:type":         "fixed",
+				},
+				map[string]interface{}{
+					"OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:36:b7:8c",
+					"version":                 float64(4),
+					"addr":                    "14.14.14.98",
+					"OS-EXT-IPS:type":         "fixed",
+				},
+				map[string]interface{}{
+					"OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:36:b7:8c",
+					"version":                 float64(6),
+					"addr":                    "3000:0:0:1::39d",
+					"OS-EXT-IPS:type":         "fixed",
+				},
+			},
+		},
+	}
+
+	interfaces := []attachinterfaces.Interface{
+		{
+			PortState: "ACTIVE",
+			FixedIPs: []attachinterfaces.FixedIP{
+				{
+					SubnetID:  "491fba80-095e-4dee-bf4b-69046ba0b7fa",
+					IPAddress: "13.13.13.106",
+				},
+				{
+					SubnetID:  "fb6ed503-7912-45cf-9bb6-15543296e960",
+					IPAddress: "3000:0:0:1::3a3",
+				},
+			},
+			PortID:  "27c8b207-4ef1-4c3f-b27a-029ac5d62df1",
+			NetID:   "7da9e62c-2ec1-4784-91f1-a6b560d7b665",
+			MACAddr: "fa:16:3e:b3:9f:c2",
+		},
+		{
+			PortState: "ACTIVE",
+			FixedIPs: []attachinterfaces.FixedIP{
+				{
+					SubnetID:  "491fba80-095e-4dee-bf4b-69046ba0b7fa",
+					IPAddress: "13.13.13.186",
+				},
+				{
+					SubnetID:  "fb6ed503-7912-45cf-9bb6-15543296e960",
+					IPAddress: "3000:0:0:1::38a",
+				},
+			},
+			PortID:  "97a49a02-3703-4632-be5e-a947a1e44138",
+			NetID:   "7da9e62c-2ec1-4784-91f1-a6b560d7b665",
+			MACAddr: "fa:16:3e:1d:b7:a7",
+		},
+		{
+			PortState: "ACTIVE",
+			FixedIPs: []attachinterfaces.FixedIP{
+				{
+					SubnetID:  "b1c1f54e-f7cc-474f-be4c-f559ffb7fc94",
+					IPAddress: "14.14.14.228",
+				},
+				{
+					SubnetID:  "3d3ab7f7-e235-4476-81a2-62982f9f9673",
+					IPAddress: "3000:0:0:1::1a3",
+				},
+			},
+			PortID:  "6465554c-5ddc-4cd8-8704-e5ed4bde21ca",
+			NetID:   "59c2e3cc-26a2-44c8-b8dc-d10f3995bcd9",
+			MACAddr: "fa:16:3e:15:20:50",
+		},
+		{
+			PortState: "ACTIVE",
+			FixedIPs: []attachinterfaces.FixedIP{
+				{
+					SubnetID:  "b1c1f54e-f7cc-474f-be4c-f559ffb7fc94",
+					IPAddress: "14.14.14.98",
+				},
+				{
+					SubnetID:  "3d3ab7f7-e235-4476-81a2-62982f9f9673",
+					IPAddress: "3000:0:0:1::39d",
+				},
+			},
+			PortID:  "a9145a03-1c58-442e-8ca5-cf85a65fdae4",
+			NetID:   "59c2e3cc-26a2-44c8-b8dc-d10f3995bcd9",
+			MACAddr: "fa:16:3e:36:b7:8c",
+		},
+		{
+			PortState: "ACTIVE",
+			FixedIPs: []attachinterfaces.FixedIP{
+				{
+					SubnetID:  "b1c1f54e-f7cc-474f-be4c-f559ffb7fc94",
+					IPAddress: "14.14.14.98",
+				},
+				{
+					SubnetID:  "3d3ab7f7-e235-4476-81a2-62982f9f9673",
+					IPAddress: "3000:0:0:1::39d",
+				},
+			},
+			PortID:  "a9145a03-1c58-442e-8ca5-cf85a65fdae4",
+			NetID:   "59c2e3cc-26a2-44c8-b8dc-d10f3995bcd9",
+			MACAddr: "fa:16:3e:36:b7:8c",
+		},
+		{
+			PortState: "ACTIVE",
+			FixedIPs: []attachinterfaces.FixedIP{
+				{
+					SubnetID:  "f729eeab-f3ef-4cbd-b90e-87030f617ecf",
+					IPAddress: "10.75.11.20",
+				},
+			},
+			PortID:  "bf7934ab-9804-4453-b0b9-dd68010e5c56",
+			NetID:   "ext-net1",
+			MACAddr: "fa:16:3e:ea:50:c9",
+		},
+		{
+			PortState: "ACTIVE",
+			FixedIPs: []attachinterfaces.FixedIP{
+				{
+					SubnetID:  "c4a00f06-ffc7-4ef8-a135-10b033dbde59",
+					IPAddress: "10.75.11.20",
+				},
+			},
+			PortID:  "37ee3b4c-b237-4648-86a5-3fbbf141c30b",
+			NetID:   "ext-net2",
+			MACAddr: "fa:16:3e:ea:50:c9",
+		},
+		{
+			PortState: "ACTIVE",
+			FixedIPs: []attachinterfaces.FixedIP{
+				{
+					SubnetID:  "bbece9ca-5f7a-4033-80d8-a98bf75220bf",
+					IPAddress: "172.16.1.241",
+				},
+			},
+			PortID:  "3017537c-d94e-4fc6-beed-6cd6919680c1",
+			NetID:   "mycluster-01-vlan701_network",
+			MACAddr: "fa:16:3e:10:f0:27",
+		},
+		{
+			PortState: "ACTIVE",
+			FixedIPs: []attachinterfaces.FixedIP{
+				{
+					SubnetID:  "1236fcc3-f235-41bc-84f8-464329c1c4c5",
+					IPAddress: "172.16.1.241",
+				},
+			},
+			PortID:  "79f2a2de-ce1b-4424-83d8-a904e732f222",
+			NetID:   "mycluster-01-vlan701_network2",
+			MACAddr: "fa:16:3e:10:f0:27",
+		},
+		{
+			PortState: "ACTIVE",
+			FixedIPs: []attachinterfaces.FixedIP{
+				{
+					SubnetID:  "a9f8028e-7a78-4ffe-ac26-f25887b77293",
+					IPAddress: "172.16.2.36",
+				},
+				{
+					SubnetID:  "a278e619-4f31-4f54-a241-3814410f9247",
+					IPAddress: "3000:0:0:1::118",
+				},
+			},
+			PortID:  "81936400-6240-4b81-b72b-cac0840a774d",
+			NetID:   "mycluster-01-vlan702_network",
+			MACAddr: "fa:16:3e:c9:b0:7e",
+		},
+		{
+			PortState: "ACTIVE",
+			FixedIPs: []attachinterfaces.FixedIP{
+				{
+					SubnetID:  "fe9826f5-dfb5-4a4c-8a57-3a2963068bb6",
+					IPAddress: "172.16.2.36",
+				},
+				{
+					SubnetID:  "779c28ee-63cf-4dd8-9c87-b82bfae8e1fb",
+					IPAddress: "3000:0:0:1::118",
+				},
+			},
+			PortID:  "87fac0f8-d46f-4744-940a-7d9526d3cdde",
+			NetID:   "mycluster-01-vlan702_network2",
+			MACAddr: "fa:16:3e:c9:b0:7e",
+		},
+	}
+
+	networkingOpts := NetworkingOpts{
+		InternalNetworkName: []string{"mycluster-01-vlan701_network", "mycluster-01-vlan701_network2"},
+	}
+
+	addresses, err := nodeAddresses(&srv, interfaces, networkingOpts)
+	if err != nil {
+		t.Errorf("nodeAddresses returned error: %v", err)
+	}
+
+	t.Logf("addresses are %v", addresses)
+
+	want := []v1.NodeAddress{
+		{Type: v1.NodeInternalIP, Address: "172.16.1.241"},
+	}
+
+	if !reflect.DeepEqual(want, addresses) {
+		t.Errorf("nodeAddresses returned incorrect value, want %v", want)
+	}
+}
+
 func TestNewOpenStack(t *testing.T) {
 	cfg := ConfigFromEnv()
 	testConfigFromEnv(t, &cfg)
