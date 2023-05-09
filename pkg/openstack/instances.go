@@ -601,11 +601,32 @@ func nodeAddresses(srv *servers.Server, interfaces []attachinterfaces.Interface,
 		return nil, err
 	}
 
-	// Add subports as if they are directly attached
-	klog.V(5).Infof("Node '%s' is directly attached to %d networks '%s'", srv.Name, len(addresses), addresses)
-	klog.V(5).Infof("Node '%s' is attached to %d networks '%s'", srv.Name, len(allPrivates), allPrivates)
+	// Get the private networks that are not directly connected
 	if len(addresses) < len(allPrivates) {
+		extraPrivates := make(map[string][]Address)
+		// For each private network
 		for k, v := range allPrivates {
+			ok := false
+			// For each address in the private network
+			for _, a := range v {
+				// Check if the address is directly connected
+				for _, v1 := range addresses {
+					for _, a1 := range v1 {
+						if a.Addr == a1.Addr {
+							ok = true
+							break
+						}
+					}
+				}
+			}
+			// All the addresses in the private network are not directly connected
+			// Save the private network
+			if !ok {
+				extraPrivates[k] = v
+			}
+		}
+		klog.V(5).Infof("Node '%s' extraPrivates '%s'", srv.Name, extraPrivates)
+		for k, v := range extraPrivates {
 			v1, ok := addresses[k]
 			if !ok {
 				addresses[k] = v
@@ -767,7 +788,7 @@ func getSubInterfaces(interfaces []attachinterfaces.Interface, network *gophercl
 			}
 		}
 	}
-	klog.V(5).Infof("Node has %d subports '%v'", len(subports), subports)
+	klog.V(5).Infof("Node has %d sub-interfaces '%v'", len(subports), subports)
 	return subports, nil
 }
 

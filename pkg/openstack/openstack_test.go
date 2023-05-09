@@ -1043,22 +1043,6 @@ func TestNodeAddressesWithSubports(t *testing.T) {
 			PortState: "ACTIVE",
 			FixedIPs: []attachinterfaces.FixedIP{
 				{
-					SubnetID:  "b1c1f54e-f7cc-474f-be4c-f559ffb7fc94",
-					IPAddress: "14.14.14.98",
-				},
-				{
-					SubnetID:  "3d3ab7f7-e235-4476-81a2-62982f9f9673",
-					IPAddress: "3000:0:0:1::39d",
-				},
-			},
-			PortID:  "a9145a03-1c58-442e-8ca5-cf85a65fdae4",
-			NetID:   "59c2e3cc-26a2-44c8-b8dc-d10f3995bcd9",
-			MACAddr: "fa:16:3e:36:b7:8c",
-		},
-		{
-			PortState: "ACTIVE",
-			FixedIPs: []attachinterfaces.FixedIP{
-				{
 					SubnetID:  "f729eeab-f3ef-4cbd-b90e-87030f617ecf",
 					IPAddress: "10.75.11.20",
 				},
