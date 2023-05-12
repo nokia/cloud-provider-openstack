@@ -63,7 +63,7 @@ func (r *Routes) ListRoutes(ctx context.Context, clusterName string) ([]*cloudpr
 
 	nodeNamesByAddr := make(map[string]types.NodeName)
 	err := foreachServer(r.compute, servers.ListOpts{}, func(srv *servers.Server) (bool, error) {
-		interfaces, err := getAttachedInterfacesByID(r.compute, srv.ID, r.network)
+		interfaces, err := getAttachedInterfacesByID(r.compute, r.network, srv.ID)
 		if err != nil {
 			return false, err
 		}
@@ -186,7 +186,7 @@ func (r *Routes) CreateRoute(ctx context.Context, clusterName string, nameHint s
 
 	ip, _, _ := net.ParseCIDR(route.DestinationCIDR)
 	isCIDRv6 := ip.To4() == nil
-	addr, err := getAddressByName(r.compute, route.TargetNode, isCIDRv6, r.networkingOpts, r.network)
+	addr, err := getAddressByName(r.compute, r.network, route.TargetNode, isCIDRv6, r.networkingOpts)
 
 	if err != nil {
 		return err
@@ -268,7 +268,7 @@ func (r *Routes) DeleteRoute(ctx context.Context, clusterName string, route *clo
 	// Blackhole routes are orphaned and have no counterpart in OpenStack
 	if !route.Blackhole {
 		var err error
-		addr, err = getAddressByName(r.compute, route.TargetNode, isCIDRv6, r.networkingOpts, r.network)
+		addr, err = getAddressByName(r.compute, r.network, route.TargetNode, isCIDRv6, r.networkingOpts)
 		if err != nil {
 			return err
 		}
@@ -347,7 +347,7 @@ func getPortIDByIP(compute *gophercloud.ServiceClient, targetNode types.NodeName
 		return "", err
 	}
 
-	interfaces, err := getAttachedInterfacesByID(compute, srv.ID, network)
+	interfaces, err := getAttachedInterfacesByID(compute, network, srv.ID)
 	if err != nil {
 		return "", err
 	}

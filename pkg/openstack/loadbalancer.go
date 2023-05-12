@@ -806,7 +806,7 @@ func getSubnetIDForLB(compute *gophercloud.ServiceClient, node corev1.Node, netw
 		instanceID = instanceID[(ind + 1):]
 	}
 
-	interfaces, err := getAttachedInterfacesByID(compute, instanceID, network)
+	interfaces, err := getAttachedInterfacesByID(compute, network, instanceID)
 	if err != nil {
 		return "", err
 	}

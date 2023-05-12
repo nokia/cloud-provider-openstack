@@ -971,6 +971,14 @@ func TestNodeAddressesWithSubports(t *testing.T) {
 					"OS-EXT-IPS:type":         "fixed",
 				},
 			},
+			"mycluster-01-vlan703_network": []interface{}{
+				map[string]interface{}{
+					"OS-EXT-IPS-MAC:mac_addr": "fa:16:3e:36:b7:8f",
+					"version":                 float64(4),
+					"addr":                    "169.252.60.15",
+					"OS-EXT-IPS:type":         "fixed",
+				},
+			},
 		},
 	}
 
