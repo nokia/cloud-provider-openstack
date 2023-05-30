@@ -756,6 +756,9 @@ func getSubInterfaces(interfaces []attachinterfaces.Interface, network *gophercl
 			klog.Errorf("It is not expected to see more than one trunk on a single port %s", iface.PortID)
 			return subports, err
 		}
+		if len(allTrunks) == 0 {
+			continue
+		}
 		// Get subports attached to the trunks
 		trunk := allTrunks[0]
 		klog.V(5).Infof("Subports for trunk %s: %v", trunk.ID, trunk.Subports)
