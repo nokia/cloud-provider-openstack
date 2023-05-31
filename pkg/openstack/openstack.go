@@ -602,6 +602,69 @@ func getAddressByName(compute *gophercloud.ServiceClient, name types.NodeName, n
 	return "", ErrNoAddressFound
 }
 
+// getSubInterfaces returns the sub-interfaces attached via trunks to the specified node interfaces
+func getSubInterfaces(interfaces []attachinterfaces.Interface, network *gophercloud.ServiceClient) ([]attachinterfaces.Interface, error) {
+	klog.V(5).Infof("Node has %d interfaces '%v'", len(interfaces), interfaces)
+
+	var subports []attachinterfaces.Interface
+	for _, iface := range interfaces {
+		// Check if trunk ports are attached
+		listOpts := trunks.ListOpts{
+			PortID: iface.PortID,
+		}
+		allPages, err := trunks.List(network, listOpts).AllPages()
+		if err != nil {
+			klog.Infof("Failed to list trunks: %v", err)
+			return subports, nil
+		}
+		allTrunks, err := trunks.ExtractTrunks(allPages)
+		if err != nil {
+			klog.Errorf("Failed to extract trunks: %v", err)
+			return subports, err
+		}
+		if len(allTrunks) > 1 {
+			klog.Errorf("It is not expected to see more than one trunk on a single port %s", iface.PortID)
+			return subports, err
+		}
+		if len(allTrunks) == 0 {
+			continue
+		}
+		// Get subports attached to the trunks
+		trunk := allTrunks[0]
+		klog.V(5).Infof("Subports for trunk %s: %v", trunk.ID, trunk.Subports)
+		// Arrange subports as for directly attached ports
+		for _, sport := range trunk.Subports {
+			p, err := ports.Get(network, sport.PortID).Extract()
+			if err != nil {
+				klog.Errorf("Failed to get port info for subport %s: %v", sport.PortID, err)
+				return subports, err
+			}
+			n, err := networks.Get(network, p.NetworkID).Extract()
+			if err != nil {
+				klog.Errorf("Failed to get network info for subport %s: %v", sport.PortID, err)
+				return subports, err
+			}
+			var sface = attachinterfaces.Interface{
+				PortState: "ACTIVE",
+				FixedIPs:  []attachinterfaces.FixedIP{},
+				PortID:    p.ID,
+				NetID:     n.Name,
+				MACAddr:   p.MACAddress,
+			}
+			for _, ip := range p.FixedIPs {
+				var ip2 = attachinterfaces.FixedIP{
+					SubnetID:  ip.SubnetID,
+					IPAddress: ip.IPAddress,
+				}
+				sface.FixedIPs = append(sface.FixedIPs, ip2)
+			}
+			subports = append(subports, sface)
+		}
+	}
+	klog.V(5).Infof("Node has %d sub-interfaces '%v'", len(subports), subports)
+	return subports, nil
+}
+
 // getAttachedInterfacesByID returns the node interfaces of the specified instance.
 func getAttachedInterfacesByID(compute *gophercloud.ServiceClient, serviceID string, network *gophercloud.ServiceClient) ([]attachinterfaces.Interface, error) {
 	var interfaces []attachinterfaces.Interface
@@ -619,66 +682,11 @@ func getAttachedInterfacesByID(compute *gophercloud.ServiceClient, serviceID str
 	if mc.ObserveRequest(err) != nil {
 		return interfaces, err
 	}
-
-	// Check if trunk ports are attached
-	var subports []trunks.Subport
-
-	listOpts := trunks.ListOpts{}
-	allPages, err := trunks.List(network, listOpts).AllPages()
+	subInterfaces, err := getSubInterfaces(interfaces, network)
 	if err != nil {
-		klog.Errorf("Failed to list trunks: %v", err)
 		return interfaces, err
 	}
-	allTrunks, err := trunks.ExtractTrunks(allPages)
-	if err != nil {
-		klog.Errorf("Failed to extract trunks: %v", err)
-		return interfaces, err
-	}
-
-	for _, trunk := range allTrunks {
-		for _, iface := range interfaces {
-			if iface.PortID == trunk.PortID {
-				// Get subports attached to the trunk
-				s, err := trunks.GetSubports(network, trunk.ID).Extract()
-				if err != nil {
-					klog.Errorf("Failed to get subports for trunk %s: %v", trunk.ID, err)
-					return interfaces, err
-				}
-				subports = append(subports, s...)
-			}
-		}
-	}
-
-	klog.V(5).Infof("subports %v", subports)
-
-	for _, sport := range subports {
-		p, err := ports.Get(network, sport.PortID).Extract()
-		if err != nil {
-			return interfaces, err
-		}
-		n, err := networks.Get(network, p.NetworkID).Extract()
-		if err != nil {
-			return interfaces, err
-		}
-		var iface = attachinterfaces.Interface{
-			PortState: "ACTIVE",
-			FixedIPs:  []attachinterfaces.FixedIP{},
-			PortID:    p.ID,
-			NetID:     n.Name,
-			MACAddr:   p.MACAddress,
-		}
-		for _, ip := range p.FixedIPs {
-			var ip2 = attachinterfaces.FixedIP{
-				SubnetID:  ip.SubnetID,
-				IPAddress: ip.IPAddress,
-			}
-			iface.FixedIPs = append(iface.FixedIPs, ip2)
-		}
-		interfaces = append(interfaces, iface)
-	}
-
-	klog.V(5).Infof("interfaces %v", interfaces)
-
+	interfaces = append(interfaces, subInterfaces...)
 	return interfaces, nil
 }
 
