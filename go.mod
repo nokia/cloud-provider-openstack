@@ -1,6 +1,6 @@
 module k8s.io/cloud-provider-openstack
 
-go 1.17
+go 1.19
 
 require (
 	github.com/container-storage-interface/spec v1.5.0
@@ -58,6 +58,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/docker/distribution v2.7.1+incompatible // indirect
 	github.com/emicklei/go-restful v2.9.5+incompatible // indirect
+	github.com/emicklei/go-restful/v3 v3.10.2 // indirect
 	github.com/evanphx/json-patch v4.12.0+incompatible // indirect
 	github.com/felixge/httpsnoop v1.0.1 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
@@ -150,6 +151,7 @@ require (
 )
 
 replace (
+	github.com/emicklei/go-restful => github.com/emicklei/go-restful/v3 v3.8.0
 	github.com/opencontainers/runc => github.com/opencontainers/runc v1.0.0-rc9
 	google.golang.org/grpc v1.34.0 => google.golang.org/grpc v1.29.0
 	k8s.io/api => k8s.io/api v0.23.0
